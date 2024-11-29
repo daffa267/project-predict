@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 
 <body>
@@ -52,75 +53,131 @@
         </svg> Halaman ini memuat hasil prediksi pemesanan barang.</p>
     </div>
 
-  <div class="prediksi-wrapper">
-    <div class="prediksi-header">
-        <button onclick="downloadPDF()"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
-          <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
-          <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
-        </svg> Cetak</button>
+    <div class="file-upload-wrapper">
+      <label for="upload-penjualan">Unggah File Penjualan:</label>
+      <input type="file" id="upload-penjualan" accept=".xlsx, .xls" />
+      
+      <label for="upload-inventaris">Unggah File Inventaris:</label>
+      <input type="file" id="upload-inventaris" accept=".xlsx, .xls" />
     </div>
-    <table class="prediksi-table">
-        <thead>
-            <tr>
-                <th>Barang</th>
-                <th>Prediksi (Unit)</th>
-                <th>Keterangan (Permintaan)</th>
-            </tr>
-        </thead>
-        <tbody id="prediction-table">
-            <!-- Data rows will be inserted dynamically -->
-            <tr>
-                <td>Beras</td>
-                <td>150</td>
-                <td>Tinggi</td>
-            </tr>
-            <tr>
-                <td>Gula</td>
-                <td>90</td>
-                <td>Sedang</td>
-            </tr>
-            <tr>
-                <td>Minyak Goreng</td>
-                <td>50</td>
-                <td>Rendah</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</div>
-<script>
-  async function downloadPDF() {
-      const { jsPDF } = window.jspdf; // Import jsPDF dari library
-      const doc = new jsPDF();
+  
+    <button id="process-data">Proses Data</button>
+    
+    <div class="prediksi-wrapper">
+        <h3>Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan</h3>
+        <table class="prediksi-table" border="1">
+          <thead>
+              <tr>
+                  <th>Kategori Barang</th>
+                  <th>Prediksi (per unit)</th>
+                  <th>Keterangan (permintaan)</th>
+              </tr>
+          </thead>
+          <tbody id="prediction-table">
+              <!-- Data rows akan diisi secara dinamis -->
+          </tbody>
+        </table>    
+    </div>
+  </div> 
+  
+  <script>
+    document.getElementById("process-data").addEventListener("click", processFiles);
 
-      // Judul dokumen
-      doc.setFontSize(14);
-      doc.text("Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan", 14, 10);
+    async function processFiles() {
+      const penjualanFile = document.getElementById("upload-penjualan").files[0];
+      const inventarisFile = document.getElementById("upload-inventaris").files[0];
 
-      // Data untuk tabel
-      const rows = [
-          ["Beras", "150", "Tinggi"],
-          ["Gula", "90", "Sedang"],
-          ["Minyak Goreng", "50", "Rendah"]
-      ];
+      if (!penjualanFile || !inventarisFile) {
+        alert("Harap unggah kedua file: Penjualan dan Inventaris.");
+        return;
+      }
 
-      const columns = ["Barang", "Prediksi (Unit)", "Keterangan (Permintaan)"];
+      const penjualanData = await readExcel(penjualanFile);
+      const inventarisData = await readExcel(inventarisFile);
 
-      // Menambahkan tabel ke dalam PDF
-      doc.autoTable({
-          head: [columns],
-          body: rows,
-          startY: 20, // Posisi awal tabel
-          theme: "striped", // Gaya tabel
-          headStyles: { fillColor: '#58acff' }, // Warna header tabel
-          margin: { left: 14, right: 14 } // Margin tabel
+      const results = calculatePredictions(penjualanData, inventarisData);
+      displayResults(results);
+    }
+
+    function readExcel(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const data = event.target.result;
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+          resolve(jsonData);
+        };
+        reader.onerror = reject;
+        reader.readAsBinaryString(file);
       });
+    }
 
-      // Mengunduh file PDF
-      doc.save("Hasil.pdf");
-  }
-</script>
+    function calculatePredictions(penjualanData, inventarisData) {
+      return penjualanData.map((item) => {
+        const namaBarang = item["Nama Barang"];
+        const salesData = Object.keys(item)
+          .filter((key) => key.startsWith("Minggu"))
+          .map((key) => item[key]);
+
+        // Moving Average (2 weeks prediction)
+        const movingAverage = salesData.slice(-4).reduce((a, b) => a + b, 0) / 4;
+
+        // Exponential Smoothing (α = 0.5)
+        const alpha = 0.5;
+        let exponentialSmoothing = salesData[0];
+        salesData.forEach((value) => {
+          exponentialSmoothing = alpha * value + (1 - alpha) * exponentialSmoothing;
+        });
+
+        // Final prediction
+        const prediksi = Math.round((movingAverage + exponentialSmoothing) / 2);
+
+        // Determine category (Tinggi, Sedang, Rendah)
+        let keterangan;
+        if (prediksi > 100) {
+          keterangan = "Tinggi";
+        } else if (prediksi >= 50) {
+          keterangan = "Sedang";
+        } else if (prediksi >= 20) {
+          keterangan = "Rendah";
+        } else {
+          keterangan = "Sangat Rendah";
+        }
+
+        return {
+          namaBarang,
+          prediksi,
+          keterangan,
+        };
+      });
+    }
+
+    function displayResults(results) {
+      const tableBody = document.getElementById("prediction-table");
+      tableBody.innerHTML = "";
+
+      results.forEach((result) => {
+        const row = document.createElement("tr");
+
+        const namaBarangCell = document.createElement("td");
+        namaBarangCell.textContent = result.namaBarang;
+
+        const prediksiCell = document.createElement("td");
+        prediksiCell.textContent = result.prediksi;
+
+        const keteranganCell = document.createElement("td");
+        keteranganCell.textContent = result.keterangan;
+
+        row.appendChild(namaBarangCell);
+        row.appendChild(prediksiCell);
+        row.appendChild(keteranganCell);
+
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
 
 </body>
-
 </html>
