@@ -328,6 +328,140 @@ body {
     position: relative; 
 }
 
+/* Profile Page */
+
+.body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Profile Container */
+  .profile-container {
+    display: flex;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    width: 100%;
+    min-width: 980px;
+  }
+  
+  /* Profile Card Section */
+  .profile-card {
+    background-color: #f0f4f8;
+    padding: 20px;
+    text-align: center;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-card, .profile-details{
+    flex: 1;
+    padding: 20px;
+    width: 100%;
+  }
+
+  .profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid black;
+    margin-bottom: 15px;
+  }
+  
+  .job-title {
+    color: #777;
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  
+  .location {
+    color: #555;
+    font-size: 12px;
+  }
+  
+  .action-buttons {
+    margin-top: 15px;
+  }
+  
+  .btn {
+    background-color: #25D366; /* Warna latar belakang WhatsApp */
+    color: white; /* Warna teks */
+    padding: 10px 20px; /* Ruang di dalam tombol */
+    border: none; /* Menghilangkan border default */
+    border-radius: 4px; /* Sudut melengkung */
+    cursor: pointer; /* Menampilkan pointer saat hover */
+    text-decoration: none; /* Menghilangkan garis bawah jika menggunakan <a> */
+    display: inline-block; /* Menjaga tombol dalam satu baris */
+}
+
+.btn:hover {
+    background-color: #128C7E; /* Warna saat hover */
+}
+  
+  .btn.follow {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn.message {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .btn:hover {
+    opacity: 0.9;
+  }
+  
+  /* Profile Details Section */
+  .profile-details {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    width: 60%;
+  }
+  
+  .profile-details h3 {
+    margin: 10px 0 5px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .profile-details p {
+    margin: 0 0 15px;
+    color: #555;
+  }
+  
+  .btn.location {
+    background-color: #ffc107;
+    color: white;
+    margin-top: 10px;
+  }
+
+  .info-box {
+    border: 1px solid #ddd; /* Garis luar kotak */
+    border-radius: 5px; /* Sudut melengkung */
+    padding: 10px; /* Ruang dalam kotak */
+    background-color: #f9f9f9; /* Warna latar belakang */
+    margin-bottom: 15px; /* Jarak antar kotak */
+    font-size: 14px;
+    color: #555;
+  }
+
+  @media (max-width: 768px) {
+    .profile-container {
+      flex-direction: column; /* Ubah jadi kolom */
+    }
+
 @media (max-width: 768px) {
     .cards {
         grid-template-columns: repeat(2, 1fr);
@@ -338,70 +472,4 @@ body {
     .cards {
         grid-template-columns: 1fr;
     }
-}
-
-/* kode hasil.html */
-.file-upload-wrapper {
-margin: 20px 0;
-display: flex;
-flex-direction: column;
-}
-
-.file-upload-wrapper label {
-margin-bottom: 10px;
-margin-top: 10px;
-font-weight: bold;
-color: #2c3e50;
-}
-
-.file-upload-wrapper input {
-padding: 10px;
-border: 2px solid #bdc3c7;
-border-radius: 5px;
-}
-
-#process-data {
-background-color: #1abc9c;
-color: white;
-padding: 10px 20px;
-border: none;
-border-radius: 5px;
-font-size: 16px;
-cursor: pointer;
-margin-top: 10px;
-transition: background-color 0.3s ease;
-}
-
-#process-data:hover {
-background-color: #16a085;
-}
-
-.prediksi-wrapper {
-margin-top: 20px;
-background-color: #ecf0f1;
-padding: 20px;
-border-radius: 10px;
-box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.prediksi-wrapper h3 {
-margin-bottom: 10px;
-color: #2c3e50;
-}
-
-.prediksi-table {
-width: 100%;
-border-collapse: collapse;
-}
-
-.prediksi-table th,
-.prediksi-table td {
-padding: 10px;
-text-align: center;
-border: 1px solid #bdc3c7;
-}
-
-.prediksi-table th {
-background-color: #1abc9c;
-color: white;
 }
