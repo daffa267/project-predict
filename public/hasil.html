@@ -79,22 +79,28 @@
 
     <div class="file-upload-wrapper">
       <div class="upload-item">
-        <label for="upload-penjualan">Unggah File Penjualan:</label>
+        <label for="upload-penjualan">Unggah Data Penjualan:</label>
         <input type="file" id="upload-penjualan" accept=".xlsx, .xls" />
       </div>
       <div class="upload-item">
-        <label for="upload-inventaris">Unggah File Inventaris:</label>
+        <label for="upload-inventaris">Unggah Data Inventaris:</label>
         <input type="file" id="upload-inventaris" accept=".xlsx, .xls" />
       </div>
     </div>
 
     <div class="button-container">
-      <button id="process-data">Proses Data</button>
+      <button id="process-data"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+      </svg> Proses</button>
     </div>
-    <button id="download-pdf">Cetak</button>
+    <button id="download-pdf"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+      <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1"/>
+      <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1"/>
+    </svg> Cetak</button>
 
     <div class="prediksi-wrapper">
-      <h3>Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan</h3>
+      <h3>Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan.</h3>
       <table class="prediksi-table" border="1">
         <thead>
           <tr>
@@ -119,7 +125,7 @@
       const inventarisFile = document.getElementById("upload-inventaris").files[0];
 
       if (!penjualanFile || !inventarisFile) {
-        alert("Harap unggah kedua file: Penjualan dan Inventaris.");
+        alert("Data belum diunggah. Unggah dulu boyy!");
         return;
       }
 
@@ -145,6 +151,7 @@
       });
     }
 
+    // Model Prediksi
     function calculatePredictions(penjualanData, inventarisData) {
       return penjualanData.map((item) => {
         const namaBarang = item["Nama Barang"];
@@ -170,6 +177,7 @@
       });
     }
 
+
     function displayResults(results) {
       const tableBody = document.getElementById("prediction-table");
       tableBody.innerHTML = "";
@@ -186,46 +194,52 @@
     }
 
     function downloadPDF() {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF();
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
 
+  // Tambahkan konten utama
+  pdf.setFont("times", "bold");
+  pdf.setFontSize(13);
+  pdf.setTextColor(0, 0, 0);
 
-      // Tambahkan konten utama
-      pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(12);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text("Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan", 10, 10);
+  // Hitung posisi teks untuk rata tengah
+  const pageWidth = pdf.internal.pageSize.getWidth(); // Lebar halaman
+  const text = "Hasil Prediksi Untuk Pemesanan Barang 2 Minggu Kedepan.";
+  const textWidth = pdf.getTextWidth(text); // Lebar teks
+  const x = (pageWidth - textWidth) / 2; // Posisi x untuk rata tengah
 
-      // Tambahkan tabel
-      pdf.autoTable({
-        html: ".prediksi-table",
-        startY: 20,
-      });
+  pdf.text(text, x, 10); // Tambahkan teks dengan posisi x yang sudah dihitung
 
-      // Dapatkan tinggi dokumen setelah tabel
-      const tableHeight = pdf.lastAutoTable.finalY;
+  // Tambahkan tabel
+  pdf.autoTable({
+  html: ".prediksi-table",
+  startY: 20,
+  styles: {
+    lineWidth: 0.4, // Ketebalan border
+    lineColor: ['#3a3a3a'], // Warna border (hitam)
+  },
+});
 
-      // Tambahkan watermark di bawah tabel
-      pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(14); // Ukuran sedang
-      pdf.setTextColor(200, 200, 200); // Warna abu-abu terang
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const watermarkText = "Predict 1.0";
+  // Dapatkan tinggi dokumen setelah tabel
+  const tableHeight = pdf.lastAutoTable.finalY;
 
-      pdf.text(
-        watermarkText,
-        pageWidth / 2,
-        tableHeight + (pageHeight - tableHeight) / 2, // Posisikan di bawah tabel di tengah halaman
-        {
-          angle: 0, // Rotasi 0 untuk watermark horizontal
-          align: "center",
-        }
-      );
+  // Tambahkan watermark di bawah tabel
+  pdf.setFont("helvetica", "italic");
+  pdf.setFontSize(9); // Ukuran sedang
+  pdf.setTextColor(0,0,0); // Warna abu-abu terang
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const watermarkText = "By Predict 1.0";
 
-      // Simpan PDF
-      pdf.save("Hasil Prediksi.pdf");
-    }
+  pdf.text(
+    watermarkText,
+    pageWidth / 1.2,
+    tableHeight + (pageHeight - tableHeight) / 1.1, // Posisikan di bawah tabel di tengah halaman
+  );
+
+  // Simpan PDF
+  pdf.save("Hasil Prediksi.pdf");
+}
+
   </script>
 </body>
 </html>

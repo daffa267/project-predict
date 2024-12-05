@@ -308,10 +308,11 @@ body {
 .prediksi-table td {
     text-align: left;
     padding: 8px;
-    border: 2px solid #989898;
+    border: 2px solid #3a3a3a;
 }
 
 .prediksi-table th {
+    text-align: center;
     background-color: #58acff;
     color: white;
 }
@@ -542,6 +543,11 @@ button#download-pdf {
     color: #555;
   }
 
+  button#svg{
+    width: 30px;
+    height: 30px;
+  }
+
   @media (max-width: 768px) {
     .profile-container {
       flex-direction: column; /* Ubah jadi kolom */
@@ -557,4 +563,5 @@ button#download-pdf {
     .cards {
         grid-template-columns: 1fr;
     }
+  }
 }
